@@ -77,4 +77,5 @@
     <string name="lblTipo">Tipo</string>
     <string name="lblQuartos">Quartos (Mínimo)</string>
     <string name="lblBuscar">Buscar</string>
+    <string name="title_activity_contato">ContatoActivity</string>
 </resources>

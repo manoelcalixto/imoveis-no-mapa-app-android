@@ -1,4 +1,4 @@
-package br.com.imoveisnomapa.imoveisnomapa;
+package br.com.imoveisnomapa.imoveisnomapa.activities;
 
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import br.com.imoveisnomapa.imoveisnomapa.R;
 import br.com.imoveisnomapa.imoveisnomapa.adapter.ImovelAdapter;
 import br.com.imoveisnomapa.imoveisnomapa.model.Bairro;
 import br.com.imoveisnomapa.imoveisnomapa.model.Cidade;
@@ -113,7 +114,7 @@ public class FiltroActivity extends AppCompatActivity implements View.OnClickLis
 
         spinnerTipos = (Spinner)findViewById(R.id.spinnerTipo);
 
-        String url = "http://192.168.1.5:5000/buscarTipos";
+        String url = "http://45.55.214.198/buscarTipos";
 
 
         JSONObject requestJsonObject = new JSONObject();
@@ -247,7 +248,7 @@ public class FiltroActivity extends AppCompatActivity implements View.OnClickLis
     private void buscarEstados (){
 
 
-        String url = "http://192.168.1.5:5000/buscarEstados";
+        String url = "http://45.55.214.198/buscarEstados";
 
         CustomRequest jsonObjReq = new CustomRequest(Request.Method.POST, url, new Response.Listener<JSONArray>() {
             @Override
@@ -301,7 +302,7 @@ public class FiltroActivity extends AppCompatActivity implements View.OnClickLis
     private void buscarCidades(String estado) throws JSONException {
         spinnerCidades = (Spinner)findViewById(R.id.spinnerCidades);
 
-        String url = "http://192.168.1.5:5000/buscarCidadesPorEstado";
+        String url = "http://45.55.214.198/buscarCidadesPorEstado";
 
         JSONObject requestJsonObject = new JSONObject();
         requestJsonObject.put("estado", estado);
@@ -365,7 +366,7 @@ public class FiltroActivity extends AppCompatActivity implements View.OnClickLis
     private void buscarBairros(String cidade) throws JSONException {
         spinnerBairros = (Spinner) findViewById(R.id.spinnerBairros);
 
-        String url = "http://192.168.1.5:5000/buscarBairrosPorEstadoECidade";
+        String url = "http://45.55.214.198/buscarBairrosPorEstadoECidade";
 
         JSONObject requestJsonObject = new JSONObject();
         requestJsonObject.put("cidade", cidade);

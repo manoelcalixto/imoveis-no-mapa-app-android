@@ -2,36 +2,25 @@ package br.com.imoveisnomapa.imoveisnomapa.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
 import br.com.imoveisnomapa.imoveisnomapa.R;
 import br.com.imoveisnomapa.imoveisnomapa.model.Imovel;
-import br.com.imoveisnomapa.imoveisnomapa.service.CustomRequest;
 import br.com.imoveisnomapa.imoveisnomapa.service.VolleySingleton;
 
 /**
@@ -43,7 +32,7 @@ public class ImovelAdapter extends BaseAdapter {
     List<Imovel> imoveis;
     ImageLoader imageLoader;
     NetworkImageView networkImageView;
-    String enderecoImagemProducao = "http://192.168.1.5:5000/img_upload/thumbs/big/";
+    String enderecoImagemProducao = "http://45.55.214.198:8080/img_upload/thumbs/big/";
     String enderecoImagemDesenvolvimento = "http://192.168.1.5:5000/data/images/";
 
     public ImovelAdapter(Context ctx, List<Imovel> imoveis){
@@ -98,7 +87,7 @@ public class ImovelAdapter extends BaseAdapter {
             }
         });
 
-        final String url = enderecoImagemDesenvolvimento + imovel.getImages()[0].getPath().replaceAll("full/", "");
+        final String url = enderecoImagemProducao + imovel.getImages()[0].getPath().replaceAll("full/", "");
 
         imageLoader = VolleySingleton.getInstance(ctx).getImageLoader();
         imageLoader.get(url, new ImageLoader.ImageListener() {

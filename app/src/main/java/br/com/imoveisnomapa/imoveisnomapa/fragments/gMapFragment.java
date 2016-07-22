@@ -1,12 +1,15 @@
 package br.com.imoveisnomapa.imoveisnomapa.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +51,7 @@ import br.com.imoveisnomapa.imoveisnomapa.R;
 import br.com.imoveisnomapa.imoveisnomapa.adapter.ImovelAdapter;
 import br.com.imoveisnomapa.imoveisnomapa.model.Imovel;
 import br.com.imoveisnomapa.imoveisnomapa.service.CustomRequest;
+import br.com.imoveisnomapa.imoveisnomapa.utils.PermissionUtils;
 
 /**
  * Created by calixto on 13/02/16.
@@ -69,7 +73,6 @@ public class gMapFragment extends Fragment implements OnMapReadyCallback {
     private boolean filtroEstado;
     private boolean filtroCidade;
     private boolean filtroBairro;
-
 
     @Nullable
     @Override
@@ -130,10 +133,50 @@ public class gMapFragment extends Fragment implements OnMapReadyCallback {
 
         MapFragment fragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         fragment.getMapAsync(this);
+
+        // Solicita as permissÃµes
+        String[] permissoes = new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+        };
+        PermissionUtils.validate(this.getActivity(), 0, permissoes);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        for (int result : grantResults) {
+            if (result == PackageManager.PERMISSION_DENIED) {
+                // Alguma permissÃ£o foi negada, agora Ã© com vocÃª :-)
+                alertAndFinish();
+                return;
+            }
+        }
+
+        // Se chegou aqui estÃ¡ OK :-)
+    }
+
+    private void alertAndFinish() {
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+            builder.setTitle(R.string.app_name).setMessage("Para utilizar este aplicativo, vocÃª precisa aceitar as permissÃµes.");
+            // Add the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    getActivity().finish();
+                }
+            });
+            android.support.v7.app.AlertDialog dialog = builder.create();
+            dialog.show();
+
+        }
     }
 
     public void buscarImoveisPorGeoLocalizacao(double northeastLatitude, double northeastLongitude, double southwestLatitude, double southwestLongitude) {
-        String url = "http://192.168.1.5:5000/buscarImoveisPorGeoLocalizacao";
+        String url = "http://45.55.214.198/buscarImoveisPorGeoLocalizacao";
+
+
 
         JSONObject requestJsonObject = new JSONObject();
         try {
@@ -203,11 +246,11 @@ public class gMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void buscarImoveisPorFiltro(String operacao, String tipo, String preco, String quarto, String estado, String cidade, String bairro) {
-        String url = "http://192.168.1.5:5000/buscarImoveisPorFiltro";
+        String url = "http://45.55.214.198/buscarImoveisPorFiltro";
 
         JSONObject requestJsonObject = new JSONObject();
         try {
-            mClusterManager = new ClusterManager<Imovel>(getActivity(), map);
+
 
             if (!operacao.equals("")){
                 requestJsonObject.put("operacao", operacao);
@@ -326,7 +369,7 @@ public class gMapFragment extends Fragment implements OnMapReadyCallback {
                                                    MarkerOptions markerOptions) {
 
 
-            IconGenerator iconFactory = new IconGenerator(getActivity().getApplicationContext());
+            IconGenerator iconFactory = new IconGenerator(getActivity());
 
             iconFactory.setStyle(IconGenerator.STYLE_GREEN);
 
@@ -362,6 +405,8 @@ public class gMapFragment extends Fragment implements OnMapReadyCallback {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+
+
             return;
         }
 
@@ -387,6 +432,7 @@ public class gMapFragment extends Fragment implements OnMapReadyCallback {
         //map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-33.8696, 151.2094), 10));
 
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
 
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override

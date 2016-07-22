@@ -1,33 +1,32 @@
-package br.com.imoveisnomapa.imoveisnomapa;
+package br.com.imoveisnomapa.imoveisnomapa.activities;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-
+import br.com.imoveisnomapa.imoveisnomapa.R;
+import br.com.imoveisnomapa.imoveisnomapa.activities.FiltroActivity;
 import br.com.imoveisnomapa.imoveisnomapa.fragments.gMapFragment;
-import br.com.imoveisnomapa.imoveisnomapa.model.Imovel;
+import br.com.imoveisnomapa.imoveisnomapa.utils.PermissionUtils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -65,14 +64,23 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Solicita as permissÃµes
+        String[] permissoes = new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+        };
+        PermissionUtils.validate(this, 0, permissoes);
+
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null) {
+        if (bundle != null) {
             filtro = bundle.getBoolean("filtro");
         }
 
-        if (filtro == false){
+        if (filtro == false) {
             drawer.openDrawer(Gravity.LEFT);
 
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            provider = locationManager.getBestProvider(criteria, true);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -83,9 +91,6 @@ public class MainActivity extends AppCompatActivity
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            provider = locationManager.getBestProvider(criteria, true);
             location = locationManager.getLastKnownLocation(provider);
         } else {
             FragmentManager fm = getFragmentManager();
@@ -95,12 +100,41 @@ public class MainActivity extends AppCompatActivity
             mapFragment.setArguments(bundle);
 
             fm.beginTransaction().replace(R.id.content_frame, mapFragment).commit();
-            finish();
+
 
         }
 
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        for (int result : grantResults) {
+            if (result == PackageManager.PERMISSION_DENIED) {
+                // Alguma permissÃ£o foi negada, agora Ã© com vocÃª :-)
+                alertAndFinish();
+                return;
+            }
+        }
+
+        // Se chegou aqui estÃ¡ OK :-)
+    }
+
+    private void alertAndFinish() {
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.app_name).setMessage("Para utilizar este aplicativo, vocÃª precisa aceitar as permissÃµes.");
+            // Add the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    finish();
+                }
+            });
+            android.support.v7.app.AlertDialog dialog = builder.create();
+            dialog.show();
+
+        }
     }
 
     @Override
@@ -173,7 +207,8 @@ public class MainActivity extends AppCompatActivity
 
             fm.beginTransaction().replace(R.id.content_frame, mapFragment).commit();
         } else if (id == R.id.contato) {
-
+            Intent intent = new Intent(this, ContatoActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

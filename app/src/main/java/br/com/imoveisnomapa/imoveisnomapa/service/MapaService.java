@@ -25,7 +25,7 @@ public class MapaService {
 
     public ArrayList<Estado> buscarEstados (Context contexto){
 
-        String url = "http://192.168.1.5:5000/buscarEstados";
+        String url = "http://45.55.214.198/buscarEstados";
 
         // Request a string response
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,

@@ -1,4 +1,4 @@
-package br.com.imoveisnomapa.imoveisnomapa;
+package br.com.imoveisnomapa.imoveisnomapa.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
